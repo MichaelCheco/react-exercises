@@ -1,0 +1,50 @@
+.App {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-gap: 10px;
+	border: 1px solid red;
+}
+.board {
+	display: flex;
+	flex-direction: column;
+	padding: 5px;
+	/* width: 250px; */
+	/* height: 250px; */
+	/* overflow: scroll; */
+	border: 2px solid blue;
+}
+.header {
+	display: flex;
+	justify-content: flex-end;
+	width: 95%;
+	margin: 10px;
+}
+
+button {
+	width: 125px;
+	height: 33px;
+	background-color: #ff6f61;
+	color: white;
+	border-radius: 2px;
+	font-size: 13px;
+	transition: all 0.4s ease;
+	outline: 0;
+	margin-top: 15px;
+}
+button:hover {
+	background-color: #ffffff;
+	color: #ff6f61;
+	border: 1px solid #ff6f61;
+	cursor: pointer;
+	transition: all 0.4s ease;
+	box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
+}
+input {
+	width: 100%;
+	height: 55px;
+}
+.task {
+	border: 2px solid black;
+	padding: 5px;
+	cursor: pointer;
+}
