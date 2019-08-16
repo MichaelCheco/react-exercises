@@ -1,14 +1,26 @@
 .App {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	grid-gap: 10px;
+	grid-gap: 35px;
 }
 
 .header {
 	display: flex;
 	justify-content: flex-end;
+	align-content: center;
 	width: 95%;
 	margin: 10px;
+}
+input {
+	height: 25px;
+	margin-right: 10px;
+}
+.add {
+	display: block;
+	flex-direction: column;
+	justify-content: space-between;
+	margin: 5px 15px;
+	/* border: 3px solid blue; */
 }
 
 button {
@@ -31,10 +43,7 @@ button:hover {
 	transition: all 0.4s ease;
 	box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
 }
-input {
-	width: 100%;
-	height: 55px;
-}
+
 .task {
 	border: 2px solid black;
 	padding: 5px;
@@ -43,10 +52,10 @@ input {
 .board {
 	text-align: center;
 	transition: box-shadow 0.3s;
-	width: 300px;
-	height: 350px;
-	margin: 50px;
-	border-radius: 10px;
+	/* width: 300px;
+	height: 350px; */
+	padding: 5px;
+	border-radius: 3px;
 	border: 1px solid #ccc;
 	background: #fff;
 	float: left;
