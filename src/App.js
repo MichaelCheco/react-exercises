@@ -177,19 +177,19 @@ function Board({
 								dispatch({ type: 'INPUT', e: e.target.value, title })
 							}
 						/>
-						<button onClick={() => dispatch({ type: 'EDIT', title, task })}>
-							Add Task
-						</button>
-						<button onClick={() => dispatch({ type: 'TOGGLE', title })}>
+						<span onClick={() => dispatch({ type: 'EDIT', title, task })}>
+							{'✅'}
+						</span>
+						<span onClick={() => dispatch({ type: 'TOGGLE', title })}>
 							Cancel
-						</button>
+						</span>
 					</>
 				)}
-				<button
+				<div
 					disabled={editing}
 					onClick={() => dispatch({ type: 'TOGGLE', title })}>
-					{'✏️'}
-				</button>
+					{'➕'}
+				</div>
 			</div>
 		</div>
 	)
