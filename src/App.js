@@ -1,11 +1,12 @@
 import React from 'react'
 import './App.css'
-// const initialState = {
-//   word:
-//     window.localStorage.getItem("word") == null
-//       ? ""
-//       : window.localStorage.getItem("word")
-// };
+import {
+	Menu,
+	MenuList,
+	MenuButton,
+	MenuItem,
+	MenuLink,
+} from '@reach/menu-button'
 let initialState = {
 	Boards:
 		window.localStorage.getItem('Boards') == null
@@ -67,6 +68,33 @@ function boardReducer(state, action) {
 			})
 			return { ...state, Boards: newBoards }
 		}
+		case 'MOVE': {
+			// remove from current board
+			let boardToRemove = state.Boards.find(b => b.title === action.title)
+			let adding
+			boardToRemove.cards.forEach((c, i) => {
+				if (c.task === action.task) {
+					adding = c
+				}
+			})
+
+			let filtered = boardToRemove.cards.filter(c => c.task !== action.task)
+			boardToRemove.cards = filtered
+			// add to new board
+			let boardToAdd = state.Boards.find(b => b.id === action.id)
+			boardToAdd.cards = [...boardToAdd.cards, adding]
+			let final = state.Boards.map(b => {
+				if (b.title === action.title) {
+					return boardToRemove
+				} else if (b.id === action.id) {
+					return boardToAdd
+				} else {
+					return b
+				}
+			})
+			return { ...state, Boards: final }
+		}
+
 		// eslint-disable-next-line no-fallthrough
 		default: {
 			throw new Error(`unsupported ${action.type}`)
@@ -79,6 +107,9 @@ function App() {
 	React.useEffect(() => {
 		localStorage.setItem('Boards', JSON.stringify(state.Boards))
 	}, [state.Boards])
+	const moveItem = (id, task, title) => {
+		dispatch({ type: 'MOVE', id, task, title })
+	}
 	return (
 		<>
 			<header className="header">
@@ -93,22 +124,42 @@ function App() {
 				</button>
 			</header>
 			<div className="App">
-				{state.Boards.map(b => (
-					<Board b={b} dispatch={dispatch} />
+				{state.Boards.map((b, i) => (
+					<Board
+						b={b}
+						dispatch={dispatch}
+						key={i}
+						boards={state}
+						moveItem={moveItem}
+					/>
 				))}
 			</div>
 		</>
 	)
 }
-function Board({ b: { title, task, editing, cards }, dispatch }) {
+function Board({
+	b: { title, task, editing, cards },
+	dispatch,
+	boards,
+	moveItem,
+}) {
 	return (
 		<div className="board">
 			<h2>{title}</h2>
-			{cards.map(c => (
-				<div>
-					<p className="task" draggable={true}>
-						{c.task}
-					</p>
+			{cards.map((c, i) => (
+				<div key={i}>
+					<Menu>
+						<MenuButton>{c.task}</MenuButton>
+						<MenuList>
+							{boards.Boards.map(board => {
+								return (
+									<MenuItem onSelect={() => moveItem(board.id, c.task, title)}>
+										{board.title}
+									</MenuItem>
+								)
+							})}
+						</MenuList>
+					</Menu>
 				</div>
 			))}
 			<div>
