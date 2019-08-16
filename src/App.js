@@ -113,15 +113,17 @@ function App() {
 	return (
 		<>
 			<header className="header">
-				<label htmlFor="boardTitle" />
-				<input
-					id="boardTitle"
-					value={boardTitle}
-					onChange={e => setBoardTitle(e.target.value)}
-				/>
-				<button onClick={() => dispatch({ type: 'ADD', title: boardTitle })}>
-					ADD BOARD
-				</button>
+				<div className="add">
+					<label htmlFor="boardTitle" />
+					<input
+						id="boardTitle"
+						value={boardTitle}
+						onChange={e => setBoardTitle(e.target.value)}
+					/>
+					<button onClick={() => dispatch({ type: 'ADD', title: boardTitle })}>
+						ADD BOARD
+					</button>
+				</div>
 			</header>
 			<div className="App">
 				{state.Boards.map((b, i) => (
