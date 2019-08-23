@@ -91,7 +91,6 @@ function boardReducer({ Boards, id }, action) {
 			return { Boards: final, id }
 		}
 
-		// eslint-disable-next-line no-fallthrough
 		default: {
 			throw new Error(`unsupported ${action.type}`)
 		}
