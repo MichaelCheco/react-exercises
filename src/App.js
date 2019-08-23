@@ -100,7 +100,6 @@ function boardReducer({ Boards, id }, action) {
 function App() {
 	const [boardTitle, setBoardTitle] = React.useState('')
 	const [{ Boards }, dispatch] = React.useReducer(boardReducer, initialState)
-	console.table(Boards)
 	React.useEffect(() => {
 		localStorage.setItem('Boards', JSON.stringify(Boards))
 	}, [Boards])
