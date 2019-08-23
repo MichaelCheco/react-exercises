@@ -1,11 +1,7 @@
 import React from 'react'
 import './App.css'
-import {
-	Menu,
-	MenuList,
-	MenuButton,
-	MenuItem,
-} from '@reach/menu-button'
+import { Menu, MenuList, MenuButton, MenuItem } from '@reach/menu-button'
+
 let initialState = {
 	Boards:
 		window.localStorage.getItem('Boards') == null
@@ -19,14 +15,15 @@ let initialState = {
 					},
 			  ]
 			: JSON.parse(window.localStorage.getItem('Boards')),
+	id: 0,
 }
-function boardReducer(state, action) {
+function boardReducer({ Boards, id }, action) {
 	switch (action.type) {
 		case 'TOGGLE': {
 			const { title } = action
-			let updated = state.Boards.map(b => {
+			let updated = Boards.map(b => {
 				if (b.title === title) {
-					return { ...b, editing: !b.editing }
+					return { ...b, editing: !b.editing, id }
 				}
 				return b
 			})
@@ -36,40 +33,40 @@ function boardReducer(state, action) {
 			let board = {
 				title: action.title,
 				cards: [{ task: 'default 1' }, { task: 'default 2' }],
-				id: Date.now(),
+				id,
 				editing: false,
 				task: '',
 			}
-			return { ...state, Boards: [...state.Boards, board] }
+			return { Boards: [...Boards, board], id: id + 1 }
 		}
 		case 'EDIT': {
-			let card = state.Boards.find(b => b.title === action.title)
+			let card = Boards.find(b => b.title === action.title)
 			let newB = { task: action.task }
 			card.editing = false
 			card.cards = [...card.cards, newB]
-			let newBoards = state.Boards.map(b => {
+			let newBoards = Boards.map(b => {
 				if (b.title === action.title) {
 					return card
 				}
 				return b
 			})
 			card.task = ''
-			return { ...state, Boards: newBoards }
+			return { Boards: newBoards, id }
 		}
 		case 'INPUT': {
-			let card = state.Boards.find(b => b.title === action.title)
+			let card = Boards.find(b => b.title === action.title)
 			card.task = action.e
-			let newBoards = state.Boards.map(b => {
+			let newBoards = Boards.map(b => {
 				if (b.title === action.title) {
 					return card
 				}
 				return b
 			})
-			return { ...state, Boards: newBoards }
+			return { Boards: newBoards, id }
 		}
 		case 'MOVE': {
 			// remove from current board
-			let boardToRemove = state.Boards.find(b => b.title === action.title)
+			let boardToRemove = Boards.find(b => b.title === action.title)
 			let adding
 			boardToRemove.cards.forEach((c, i) => {
 				if (c.task === action.task) {
@@ -80,9 +77,9 @@ function boardReducer(state, action) {
 			let filtered = boardToRemove.cards.filter(c => c.task !== action.task)
 			boardToRemove.cards = filtered
 			// add to new board
-			let boardToAdd = state.Boards.find(b => b.id === action.id)
+			let boardToAdd = Boards.find(b => b.id === action.id)
 			boardToAdd.cards = [...boardToAdd.cards, adding]
-			let final = state.Boards.map(b => {
+			let final = Boards.map(b => {
 				if (b.title === action.title) {
 					return boardToRemove
 				} else if (b.id === action.id) {
@@ -91,7 +88,7 @@ function boardReducer(state, action) {
 					return b
 				}
 			})
-			return { ...state, Boards: final }
+			return { Boards: final, id }
 		}
 
 		// eslint-disable-next-line no-fallthrough
@@ -102,10 +99,11 @@ function boardReducer(state, action) {
 }
 function App() {
 	const [boardTitle, setBoardTitle] = React.useState('')
-	const [state, dispatch] = React.useReducer(boardReducer, initialState)
+	const [{ Boards }, dispatch] = React.useReducer(boardReducer, initialState)
+	console.table(Boards)
 	React.useEffect(() => {
-		localStorage.setItem('Boards', JSON.stringify(state.Boards))
-	}, [state.Boards])
+		localStorage.setItem('Boards', JSON.stringify(Boards))
+	}, [Boards])
 	const moveItem = (id, task, title) => {
 		dispatch({ type: 'MOVE', id, task, title })
 	}
@@ -120,17 +118,17 @@ function App() {
 						onChange={e => setBoardTitle(e.target.value)}
 					/>
 					<button onClick={() => dispatch({ type: 'ADD', title: boardTitle })}>
-						ADD BOARD
+						Add Board
 					</button>
 				</div>
 			</header>
 			<div className="App">
-				{state.Boards.map((b, i) => (
+				{Boards.map((b, i) => (
 					<Board
 						b={b}
 						dispatch={dispatch}
 						key={i}
-						boards={state}
+						Boards={Boards}
 						moveItem={moveItem}
 					/>
 				))}
@@ -141,7 +139,7 @@ function App() {
 function Board({
 	b: { title, task, editing, cards },
 	dispatch,
-	boards,
+	Boards,
 	moveItem,
 }) {
 	return (
@@ -152,9 +150,11 @@ function Board({
 					<Menu>
 						<MenuButton>{c.task}</MenuButton>
 						<MenuList>
-							{boards.Boards.map(board => {
+							{Boards.map((board, i) => {
 								return (
-									<MenuItem onSelect={() => moveItem(board.id, c.task, title)}>
+									<MenuItem
+										onSelect={() => moveItem(board.id, c.task, title)}
+										key={i}>
 										{board.title}
 									</MenuItem>
 								)
